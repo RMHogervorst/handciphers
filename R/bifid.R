@@ -23,17 +23,23 @@ add_rest_of_alphabet_in_order <- function(charvec){
 
 #' with a matrix return the encrypted word.
 #'
+#' @export
 #' @examples
 #' encrypt_with_bifid(bifid_matrix,"puppersaresmalldoggos")
+#'
 encrypt_with_bifid <- function(bifidmatrix, phrase){
     phrase_ <- strsplit(phrase,split = "")[[1]]
-    #length_phrase <- length(phrase_)
+    phrase_[phrase_ == "j"] <- "i"
     columns <- purrr::map_int(phrase_,~which(bifidmatrix==.x,arr.ind = TRUE)[2])
     rows <- purrr::map_int(phrase_,~which(bifidmatrix==.x,arr.ind = TRUE)[1])
     # index
     ids <- c(rows,columns)
     start_ <- seq.int(1,length(ids)-1, 2)
     end_ <- seq.int(2, length(ids),2)
+    # So now we have the row and columns
     temp <- purrr::map2(start_, end_, ~ids[c(.x,.y)])
-    # loop over list and apply to matrix
+    rows_new <- purrr::map_int(temp, 1)
+    columns_new <- purrr::map_int(temp, 2)
+    # letters from the matrix
+    paste0(purrr::map2_chr(rows_new, columns_new, ~bifidmatrix[.x,.y]),collapse = "")
 }
